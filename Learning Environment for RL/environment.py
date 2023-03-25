@@ -62,6 +62,9 @@ class env():
             # Get the RL Interface VHL
             self.interface = self.mechanism.findExtensionByName('RL Interface')
 
+            #scene
+            self.scene_object = self.application.getSimulationFileManager().loadObject(self.scene_file)
+
             # Switch to Simulation Mode
             vxatp3.VxATPUtils.requestApplicationModeChangeAndWait(self.application, Vortex.kModeSimulating)
 
@@ -97,7 +100,7 @@ class env():
     def step(self, action):  # takes a numpy array as input
 
         # Apply actions
-        self.interface.getInputContainer()['torque'].value = action[0] * MAX_TORQUE
+        self.interface.getInputContainer()['Position'].value = action[0] * MAX_POSE
 
         # Step the simulation
         for i in range(SUB_STEPS):
@@ -107,7 +110,7 @@ class env():
         obs = self._get_obs()
 
         # Done flag
-        if self.current_step >= MAX_STEPS:
+        if (self.current_step >= MAX_STEPS) or (abs(obs[0])>100):
             done = True
         else:
             done = False
