@@ -3,7 +3,7 @@ import vxatp3
 import numpy as np
 
 #Environment Parameters
-MAX_TORQUE = 1500
+MAX_POSE = 0.4
 SUB_STEPS = 5
 MAX_STEPS = 200
 SPEED_PENALTY = 0.1
@@ -17,13 +17,15 @@ class env():
         self.vxmechanism = None
         self.mechanism = None
         self.interface = None
+        self.scene_object = None
 
         # Define the setup and mechanism file paths
         self.setup_file = 'Resources/Setup.vxc'
-        self.content_file = 'Resources/Pendulum/Pendulum.vxmechanism'
+        self.content_file = 'Resources/Motorcycle/Motorcycle.vxmechanism'
+        self.scene_file = 'Resources/Motorcycle/Motorcycle Scene.vxscene'
 
         # Create the Vortex Application
-        self.application = vxatp3.VxATPConfig.createApplication(self, 'Pendulum App', self.setup_file)
+        self.application = vxatp3.VxATPConfig.createApplication(self, 'Motorcycle App', self.setup_file)
 
         # Create a display window
         self.display = Vortex.VxExtensionFactory.create(Vortex.DisplayICD.kExtensionFactoryKey)
@@ -33,10 +35,10 @@ class env():
 
         # Initialize Action and Observation Spaces for the NN
         self.max_speed = 8.0
-        self.max_torque = 1.0
+        self.max_pose = 1.0
 
         high = np.array([1., 1., self.max_speed])
-        self.action_space = np.array([-self.max_torque, self.max_torque, (1,)])
+        self.action_space = np.array([-self.max_pose, self.max_pose, (1,)])
         self.observation_space = np.array([-high, high])
 
     def __del__(self):
