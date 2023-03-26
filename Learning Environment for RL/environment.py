@@ -133,11 +133,11 @@ class env():
 
     def _get_obs(self):
         # Extract values from RL_Interface
-        cos = self.interface.getOutputContainer()['cos'].value
-        sin = self.interface.getOutputContainer()['sin'].value
-        speed = self.interface.getOutputContainer()['speed'].value
+        theta = self.interface.getOutputContainer()['theta'].value
+        theta_dot = self.interface.getOutputContainer()['thetaDot'].value
+        theta_dot_dot = self.interface.getOutputContainer()['thetaDotDot'].value
 
-        return np.array([cos, sin, speed])
+        return np.array([theta, theta_dot, theta_dot_dot])
 
     def render(self, active=True):
 
