@@ -6,11 +6,11 @@ import time
 from models import *
 
 #Training Parameters
-total_episodes = 100
-show_every = 10
-AGGREGATE_STATS_EVERY = 20
-MIN_REWARD = 0
-MODEL_NAME = 'ddpg_pendulum_vortex'
+total_episodes = 1000
+show_every = 100
+AGGREGATE_STATS_EVERY = 30
+MIN_REWARD = 7000
+MODEL_NAME = 'ddpg_motor_vortex'
 
 # Discount factor for future rewards
 gamma = 0.99
