@@ -111,7 +111,7 @@ class env():
         obs = self._get_obs()
 
         # Done flag
-        if (self.current_step >= MAX_STEPS) or (abs(obs[0])>100):
+        if (self.current_step >= MAX_STEPS) or (abs(obs[0])>60):
             done = True
         else:
             done = False
