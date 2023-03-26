@@ -5,10 +5,11 @@ import numpy as np
 #Environment Parameters
 MAX_POSE = 0.4
 SUB_STEPS = 5
-MAX_STEPS = 200
-SPEED_PENALTY = 0.1
-VERTICAL_REWARD = 1
-HORIZONTAL_PENALTY = 0.7
+MAX_STEPS = 1300
+TIME_REWARD = 3
+THETA_PENALTY = 1
+THETA_DOT_PENALTY = 0.3
+THETA_DOT_DOT_PENALTY = 0.05
 
 class env():
 
@@ -116,12 +117,14 @@ class env():
             done = False
 
         # Reward Function
-        # Rewarding the cos (vertical) component
-        reward = - obs[0] * VERTICAL_REWARD
-        # Penalizing sin (horizontal) position
-        reward += - abs(obs[1]) * HORIZONTAL_PENALTY
-        # Penalizing speed (We want the Pendulum to be stable)
-        reward += - abs(obs[2]) * SPEED_PENALTY
+        # Rewarding the Time steps that is passed
+        reward = TIME_REWARD * self.current_step**2
+        # Penalizing theta
+        reward += - THETA_PENALTY * obs[0]**2
+        # Penalizing theta_dot
+        reward += - THETA_DOT_PENALTY * obs[1]**2
+        # Penalizing theta_dot_dot
+        reward += - THETA_DOT_DOT_PENALTY * obs[2]**2
 
         self.current_step += 1
 
