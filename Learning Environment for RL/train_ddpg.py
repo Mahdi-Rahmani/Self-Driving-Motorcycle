@@ -7,8 +7,8 @@ from models import *
 
 #Training Parameters
 total_episodes = 1000
-show_every = 100
-AGGREGATE_STATS_EVERY = 30
+show_every = 50
+AGGREGATE_STATS_EVERY = 20
 MIN_REWARD = 7000
 MODEL_NAME = 'ddpg_motor_vortex'
 
@@ -16,11 +16,11 @@ MODEL_NAME = 'ddpg_motor_vortex'
 gamma = 0.99
 
 # Used to update target networks
-tau = 0.005
+tau = 0.001
 
 # Learning rate for actor-critic models
-critic_lr = 0.002
-actor_lr = 0.001
+critic_lr = 0.001
+actor_lr = 0.0001
 
 env = env()
 
