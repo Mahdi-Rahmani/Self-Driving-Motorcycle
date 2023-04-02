@@ -6,7 +6,7 @@ import time
 from models import *
 
 #Training Parameters
-total_episodes = 1000
+total_episodes = 2000
 show_every = 50
 AGGREGATE_STATS_EVERY = 20
 MIN_REWARD = 7000
