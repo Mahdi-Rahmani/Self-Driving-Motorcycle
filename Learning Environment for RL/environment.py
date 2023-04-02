@@ -35,11 +35,11 @@ class env():
         self.display.getInput(Vortex.DisplayICD.kPlacement).setValue(Vortex.VxVector4(50, 50, 1280, 720))
 
         # Initialize Action and Observation Spaces for the NN
-        self.max_speed = 8.0
+        self.max_theta_dot_dot = 1.0
         self.max_pose = 1.0
 
-        high = np.array([1., 1., self.max_speed])
-        self.action_space = np.array([-self.max_pose, self.max_pose, (1,)])
+        high = np.array([1., 1., self.max_theta_dot_dot])
+        self.action_space = np.array([-self.max_pose, self.max_pose, (1,)], dtype=object)
         self.observation_space = np.array([-high, high])
 
     def __del__(self):
