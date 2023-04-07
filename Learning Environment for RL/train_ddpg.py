@@ -21,7 +21,7 @@ tau = 0.003
 
 # Learning rate for actor-critic models
 critic_lr = 0.001
-actor_lr = 0.0007
+actor_lr = 0.0005
 
 env = env()
 
@@ -162,6 +162,11 @@ def policy(state, noise_object):
     # We make sure action is within bounds
     legal_action = np.clip(sampled_actions, lower_bound, upper_bound)
 
+    if math.isnan([np.squeeze(legal_action)][0]):
+        print("noise",noise)
+        print("sampled_actions", sampled_actions)
+        print("legal_action", legal_action)
+
     return [np.squeeze(legal_action)]
 
 
@@ -212,8 +217,8 @@ for ep in range(total_episodes):
         tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
 
         action = policy(tf_prev_state, ou_noise)
-        if math.isnan(ction[0]):
-            print('Nan founs')
+        if math.isnan(action[0]):
+            print('Nan found')
             print('tf_preve_state', tf_prev_state)
             print('ou_noise', ou_noise)
         # Recieve state and reward from environment.

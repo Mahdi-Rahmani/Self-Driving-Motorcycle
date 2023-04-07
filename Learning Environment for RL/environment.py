@@ -4,13 +4,13 @@ import numpy as np
 #import time
 
 #Environment Parameters
-MAX_POSE = 0.4
+MAX_POSE = 0.35
 SUB_STEPS = 5
 MAX_STEPS = 1300
-TIME_REWARD = 4
-THETA_PENALTY = 3
-THETA_DOT_PENALTY = 0.1
-THETA_DOT_DOT_PENALTY = 0.05
+TIME_REWARD = 6
+THETA_PENALTY = 10
+THETA_DOT_PENALTY = 0
+THETA_DOT_DOT_PENALTY = 0
 
 class env():
 
@@ -112,7 +112,7 @@ class env():
         obs = self._get_obs()
 
         # Done flag
-        if (self.current_step >= MAX_STEPS) or (abs(obs[0])>30):
+        if (self.current_step >= MAX_STEPS) or (abs(obs[0]*20)>20):
             done = True
         else:
             done = False
@@ -121,11 +121,11 @@ class env():
         # Rewarding the Time steps that is passed
         reward = TIME_REWARD * self.current_step**2
         # Penalizing theta
-        reward += - THETA_PENALTY * obs[0]**2
+        reward += - THETA_PENALTY * (obs[0]*20)**2
         # Penalizing theta_dot
-        reward += - THETA_DOT_PENALTY * obs[1]**2
+        reward += - THETA_DOT_PENALTY * (obs[1]*10)**2
         # Penalizing theta_dot_dot
-        reward += - THETA_DOT_DOT_PENALTY * obs[2]**2
+        reward += - THETA_DOT_DOT_PENALTY * (obs[2]*10)**2
 
         self.current_step += 1
 
@@ -134,9 +134,9 @@ class env():
 
     def _get_obs(self):
         # Extract values from RL_Interface
-        theta = self.interface.getOutputContainer()['theta'].value
-        theta_dot = self.interface.getOutputContainer()['thetaDot'].value
-        theta_dot_dot = self.interface.getOutputContainer()['thetaDotDot'].value
+        theta = (self.interface.getOutputContainer()['theta'].value)/20
+        theta_dot = (self.interface.getOutputContainer()['thetaDot'].value)/10
+        theta_dot_dot = (self.interface.getOutputContainer()['thetaDotDot'].value)/10
 
         return np.array([theta, theta_dot, theta_dot_dot])
 
