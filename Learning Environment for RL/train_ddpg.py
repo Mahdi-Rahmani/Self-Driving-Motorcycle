@@ -4,23 +4,24 @@ import matplotlib.pyplot as plt
 from environment import env
 import time
 from models import *
+import math
 
 #Training Parameters
-total_episodes = 2000
-show_every = 50
-AGGREGATE_STATS_EVERY = 20
-MIN_REWARD = 7000
+total_episodes = 6000
+show_every = 100
+AGGREGATE_STATS_EVERY = 30
+MIN_REWARD = 8000
 MODEL_NAME = 'ddpg_motor_vortex'
 
 # Discount factor for future rewards
 gamma = 0.99
 
 # Used to update target networks
-tau = 0.001
+tau = 0.003
 
 # Learning rate for actor-critic models
 critic_lr = 0.001
-actor_lr = 0.0001
+actor_lr = 0.0007
 
 env = env()
 
@@ -211,6 +212,10 @@ for ep in range(total_episodes):
         tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
 
         action = policy(tf_prev_state, ou_noise)
+        if math.isnan(ction[0]):
+            print('Nan founs')
+            print('tf_preve_state', tf_prev_state)
+            print('ou_noise', ou_noise)
         # Recieve state and reward from environment.
         state, reward, done, info = env.step(action)
 

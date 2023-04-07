@@ -1,14 +1,15 @@
 import Vortex
 import vxatp3
 import numpy as np
+#import time
 
 #Environment Parameters
 MAX_POSE = 0.4
 SUB_STEPS = 5
 MAX_STEPS = 1300
-TIME_REWARD = 3
-THETA_PENALTY = 1
-THETA_DOT_PENALTY = 0.3
+TIME_REWARD = 4
+THETA_PENALTY = 3
+THETA_DOT_PENALTY = 0.1
 THETA_DOT_DOT_PENALTY = 0.05
 
 class env():
@@ -111,7 +112,7 @@ class env():
         obs = self._get_obs()
 
         # Done flag
-        if (self.current_step >= MAX_STEPS) or (abs(obs[0])>60):
+        if (self.current_step >= MAX_STEPS) or (abs(obs[0])>30):
             done = True
         else:
             done = False
