@@ -3,6 +3,13 @@ import Vortex
 import math
 
 prev_err = 0
+
+prev_thetaDot_err = 0
+sum_thetaDot = 0
+
+prev_theta_err = 0
+sum_theta = 0
+
 pose = 0
 #R_velocity = 0
 
@@ -85,23 +92,48 @@ def yaw_finder(T):
     yaw = math.degrees(yaw)
     return yaw
 
-def get_torque(theta, thetaDotDot):
+def get_torque(theta, thetaDot, thetaDotDot):
 
     # define parameters
-    thetaDotDot = math.radians(thetaDotDot)
+    #thetaDotDot = math.radians(thetaDotDot)
+    '''theta = math.radians(theta)
+
     # body
     m1 = 180
-    l1 = 0.557
-    I1 = 7.226
+    l1 = 0.48672
+    I1 = 4.54
     # fly wheel
-    m2 = 70
-    l2 = 0.901
-    I2 = 3.02
+    m2 = 100
+    l2 = 0.75
+    I2 = 4.491
     g = 9.81
 
     It = m1 * l1**2 + m2 * l2**2 + I1 + I2
-    tau_m = (m1*l1 + m2*l2)*g*math.sin(theta) - It * thetaDotDot + I2 * thetaDotDot
+    tau_m = (m1*l1 + m2*l2)*g*math.sin(theta) - It * thetaDotDot + I2 * thetaDotDot'''
+    #print("torque: , theta, thetaDotDot  ", tau_m, theta, thetaDotDot)
 
+    global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta
+    theta = math.radians(theta)
+    dt = 1/60
+    # First PID: thetaDot
+    kp1 = 2100
+    ki1 = 350
+    kd1 = 2800
+    thetaDot = -thetaDot
+    sum_thetaDot += thetaDot*dt
+    tau_m1 = kp1 * thetaDot + ki1*sum_thetaDot + kd1 * (thetaDot - prev_thetaDot_err)
+    prev_thetaDot_err = thetaDot
+
+    # Second PID: theta
+    kp2 = 2000
+    ki2 = 500
+    kd2 = 2700
+    theta = -theta
+    sum_theta += theta*dt
+    tau_m2 = kp2 * theta + ki2*sum_theta + kd2 * (theta - prev_theta_err)
+    prev_theta_err = theta
+
+    tau_m = tau_m1 + tau_m2
     return tau_m
 
 def post_step(extension):
@@ -124,9 +156,10 @@ def post_step(extension):
     thetaDot = extension.inputs.av.value[1]
     thetaDotDot = extension.inputs.aa.value[1]
 
-    torque = get_torque(theta, thetaDotDot)
+    torque = get_torque(theta,thetaDot, thetaDotDot)
 
     #print("torque: , theta, thetaDotDot  ", torque, theta, thetaDotDot)
+    #print("theta, thetaDotDot  ", theta, thetaDotDot)
    
     extension.outputs.torque.value = torque
 
@@ -146,7 +179,7 @@ def post_step(extension):
         prev_err = dist_from_line
 
     extension.outputs.steering_pose.value = math.radians(pose)
-    print('dist,pose, cur_x', dist,pose, cur_x)
+    #print('dist,pose, cur_x', dist,pose, cur_x)
     #print(dist)
  
 def on_keyframe_save(extension, data):
