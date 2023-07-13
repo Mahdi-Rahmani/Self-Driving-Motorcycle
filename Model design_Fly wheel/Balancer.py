@@ -10,6 +10,12 @@ sum_thetaDot = 0
 prev_theta_err = 0
 sum_theta = 0
 
+prev_thetaDotDot_err = 0
+sum_thetaDotDot = 0
+
+prev_fly_wheel_vel_err = 0
+sum_fly_wheel_vel = 0
+
 pose = 0
 #R_velocity = 0
 
@@ -92,8 +98,9 @@ def yaw_finder(T):
     yaw = math.degrees(yaw)
     return yaw
 
-def get_torque(theta, thetaDot, thetaDotDot):
+def get_torque(theta, thetaDot, thetaDotDot, fly_wheel_vel):
 
+    # Dynamic model formula
     # define parameters
     #thetaDotDot = math.radians(thetaDotDot)
     '''theta = math.radians(theta)
@@ -112,7 +119,7 @@ def get_torque(theta, thetaDot, thetaDotDot):
     tau_m = (m1*l1 + m2*l2)*g*math.sin(theta) - It * thetaDotDot + I2 * thetaDotDot'''
     #print("torque: , theta, thetaDotDot  ", tau_m, theta, thetaDotDot)
 
-    global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta
+    '''global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta, prev_thetaDotDot_err, sum_thetaDotDot
     theta = math.radians(theta)
     dt = 1/60
     # First PID: thetaDot
@@ -133,7 +140,46 @@ def get_torque(theta, thetaDot, thetaDotDot):
     tau_m2 = kp2 * theta + ki2*sum_theta + kd2 * (theta - prev_theta_err)
     prev_theta_err = theta
 
-    tau_m = tau_m1 + tau_m2
+    # third PID: thetaDotDot
+    kp3 = 0.01
+    ki3 = 0
+    kd3 = 0.5
+    thetaDotDot = -thetaDotDot
+    sum_thetaDotDot += thetaDotDot*dt
+    tau_m3 = kp3 * thetaDotDot + ki3*sum_thetaDotDot + kd3 * (thetaDotDot - prev_thetaDotDot_err)
+    prev_thetaDotDot_err = thetaDotDot
+
+    tau_m = tau_m1 + tau_m2 + tau_m3'''
+    global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta, prev_fly_wheel_vel_err, sum_fly_wheel_vel
+    theta = math.radians(theta)
+    dt = 1/60
+    # First PID: thetaDot
+    kp1 = 2100
+    ki1 = 350
+    kd1 = 2800
+    thetaDot = -thetaDot
+    sum_thetaDot += thetaDot*dt
+    tau_m1 = kp1 * thetaDot + ki1*sum_thetaDot + kd1 * (thetaDot - prev_thetaDot_err)
+    prev_thetaDot_err = thetaDot
+
+    # Second PID: theta
+    kp2 = 2000
+    ki2 = 500
+    kd2 = 2700
+    theta = -theta
+    sum_theta += theta*dt
+    tau_m2 = kp2 * theta + ki2*sum_theta + kd2 * (theta - prev_theta_err)
+    prev_theta_err = theta
+
+    # third PID: fly_wheel_vel
+    kp3 = 20
+    ki3 = 0
+    kd3 = 8
+    sum_fly_wheel_vel += fly_wheel_vel*dt
+    tau_m3 = kp3 * fly_wheel_vel + ki3*sum_fly_wheel_vel + kd3 * (fly_wheel_vel - prev_fly_wheel_vel_err)
+    prev_fly_wheel_vel_err = fly_wheel_vel
+
+    tau_m = tau_m1 + tau_m2 + tau_m3
     return tau_m
 
 def post_step(extension):
@@ -155,8 +201,9 @@ def post_step(extension):
     theta = roll_finder(extension.inputs.wt.value)
     thetaDot = extension.inputs.av.value[1]
     thetaDotDot = extension.inputs.aa.value[1]
+    fly_wheel_vel = extension.inputs.fly_wheel_vel.value
 
-    torque = get_torque(theta,thetaDot, thetaDotDot)
+    torque = get_torque(theta,thetaDot, thetaDotDot, fly_wheel_vel)
 
     #print("torque: , theta, thetaDotDot  ", torque, theta, thetaDotDot)
     #print("theta, thetaDotDot  ", theta, thetaDotDot)
