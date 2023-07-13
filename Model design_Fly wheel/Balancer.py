@@ -16,6 +16,8 @@ sum_thetaDotDot = 0
 prev_fly_wheel_vel_err = 0
 sum_fly_wheel_vel = 0
 
+prev_straight_err = 0
+prev_obstacle_err = 0
 pose = 0
 #R_velocity = 0
 
@@ -153,13 +155,45 @@ def get_torque(theta, thetaDot, thetaDotDot, fly_wheel_vel):
     tau_m = tau_m1 + tau_m2 + tau_m3'''
 
     # ################################## 3) move on a straight line ##################################
-    global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta, prev_fly_wheel_vel_err, sum_fly_wheel_vel
+    '''global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta, prev_fly_wheel_vel_err, sum_fly_wheel_vel
     theta = math.radians(theta)
     dt = 1/60
     # First PID: thetaDot
     kp1 = 50    #800
     ki1 = 0
     kd1 = 3    # 280
+    thetaDot = -thetaDot
+    sum_thetaDot += thetaDot*dt
+    tau_m1 = kp1 * thetaDot + ki1*sum_thetaDot + kd1 * (thetaDot - prev_thetaDot_err)
+    prev_thetaDot_err = thetaDot
+
+    # Second PID: theta
+    kp2 = 1900
+    ki2 = 0
+    kd2 = 400
+    theta = -theta
+    sum_theta += theta*dt
+    tau_m2 = kp2 * theta + ki2*sum_theta + kd2 * (theta - prev_theta_err)
+    prev_theta_err = theta
+
+    # third PID: fly_wheel_vel
+    kp3 = 2
+    ki3 = 0
+    kd3 = 3.5
+    sum_fly_wheel_vel += fly_wheel_vel*dt
+    tau_m3 = kp3 * fly_wheel_vel + ki3*sum_fly_wheel_vel + kd3 * (fly_wheel_vel - prev_fly_wheel_vel_err)
+    prev_fly_wheel_vel_err = fly_wheel_vel
+
+    tau_m = tau_m1 + tau_m2 + tau_m3'''
+
+    # ################################## 4) obstacle avoidance ##################################
+    global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta, prev_fly_wheel_vel_err, sum_fly_wheel_vel
+    theta = math.radians(theta)
+    dt = 1/60
+    # First PID: thetaDot
+    kp1 = 80    #800
+    ki1 = 0
+    kd1 = 6    # 280
     thetaDot = -thetaDot
     sum_thetaDot += thetaDot*dt
     tau_m1 = kp1 * thetaDot + ki1*sum_thetaDot + kd1 * (thetaDot - prev_thetaDot_err)
@@ -195,7 +229,7 @@ def post_step(extension):
         The DynamicsScript extension referring to this script.
      
     """
-    global prev_err, pose, R_velocity
+    global prev_straight_err, prev_obstacle_err, pose
 
     """if R_velocity < 360:
         R_velocity += 2
@@ -216,18 +250,33 @@ def post_step(extension):
     dist = saveLidarSensorDistanceField(extension.inputs.sensor.value)
     cur_x = extension.inputs.steering_wt.value[0][3]
 
+    rear_wheel_vel = 400
+
+    target_point = [50, 0]
     if dist < 11:
-        if pose < 30:
-            pose += 2
+        prev_straight_err = 0
+        kp = 2.5
+        kd = 1.3
+        
+        error = 11 - dist
+        rear_wheel_vel = (dist/11)*400
+        
+        pose = (kp*error + kd*(error-prev_obstacle_err))
+        prev_obstacle_err = error
+        #pose += 0.4
 
     else:
-        kp = 8
-        kd = 2
+        max_x = 8
+        rear_wheel_vel = ((max_x-abs(cur_x))/max_x)*400
+        kp = 4
+        kd = 2.5
 
         dist_from_line = cur_x
-        pose = -(kp*dist_from_line + kd*(dist_from_line-prev_err))
-        prev_err = dist_from_line
+        pose = -(kp*dist_from_line + kd*(dist_from_line-prev_straight_err))
+        prev_straight_err = dist_from_line
 
+    
+    extension.outputs.rear_wheel_vel.value = math.radians(rear_wheel_vel)
     extension.outputs.steering_pose.value = math.radians(pose)
     #print('dist,pose, cur_x', dist,pose, cur_x)
     #print(dist)
