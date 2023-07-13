@@ -100,7 +100,7 @@ def yaw_finder(T):
 
 def get_torque(theta, thetaDot, thetaDotDot, fly_wheel_vel):
 
-    # Dynamic model formula
+    # ################################## 1) Dynamic model formula ##################################
     # define parameters
     #thetaDotDot = math.radians(thetaDotDot)
     '''theta = math.radians(theta)
@@ -119,6 +119,7 @@ def get_torque(theta, thetaDot, thetaDotDot, fly_wheel_vel):
     tau_m = (m1*l1 + m2*l2)*g*math.sin(theta) - It * thetaDotDot + I2 * thetaDotDot'''
     #print("torque: , theta, thetaDotDot  ", tau_m, theta, thetaDotDot)
 
+    # ################################## 2) static mode ##################################
     '''global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta, prev_thetaDotDot_err, sum_thetaDotDot
     theta = math.radians(theta)
     dt = 1/60
@@ -150,31 +151,33 @@ def get_torque(theta, thetaDot, thetaDotDot, fly_wheel_vel):
     prev_thetaDotDot_err = thetaDotDot
 
     tau_m = tau_m1 + tau_m2 + tau_m3'''
+
+    # ################################## 3) move on a straight line ##################################
     global prev_thetaDot_err, sum_thetaDot, prev_theta_err, sum_theta, prev_fly_wheel_vel_err, sum_fly_wheel_vel
     theta = math.radians(theta)
     dt = 1/60
     # First PID: thetaDot
-    kp1 = 2100
-    ki1 = 350
-    kd1 = 2800
+    kp1 = 50    #800
+    ki1 = 0
+    kd1 = 3    # 280
     thetaDot = -thetaDot
     sum_thetaDot += thetaDot*dt
     tau_m1 = kp1 * thetaDot + ki1*sum_thetaDot + kd1 * (thetaDot - prev_thetaDot_err)
     prev_thetaDot_err = thetaDot
 
     # Second PID: theta
-    kp2 = 2000
-    ki2 = 500
-    kd2 = 2700
+    kp2 = 1900
+    ki2 = 0
+    kd2 = 400
     theta = -theta
     sum_theta += theta*dt
     tau_m2 = kp2 * theta + ki2*sum_theta + kd2 * (theta - prev_theta_err)
     prev_theta_err = theta
 
     # third PID: fly_wheel_vel
-    kp3 = 20
+    kp3 = 2
     ki3 = 0
-    kd3 = 8
+    kd3 = 3.5
     sum_fly_wheel_vel += fly_wheel_vel*dt
     tau_m3 = kp3 * fly_wheel_vel + ki3*sum_fly_wheel_vel + kd3 * (fly_wheel_vel - prev_fly_wheel_vel_err)
     prev_fly_wheel_vel_err = fly_wheel_vel
