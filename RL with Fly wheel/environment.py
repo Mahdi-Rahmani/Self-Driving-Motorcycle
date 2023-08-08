@@ -1,15 +1,20 @@
 import Vortex
 import vxatp3
 import numpy as np
-
+import math 
 #Environment Parameters
-MAX_TORQUE = 600
+MAX_TORQUE = 500
 SUB_STEPS = 5
-MAX_STEPS = 200
+MAX_STEPS = 120
 
-FLY_WHEEL_SPEED_PENALTY = 10
-THETA_PENALTY = 1000
-THETA_DOT_PENALTY = 400
+SPEED_PENALTY = 0.01
+THETA_DOT_PENALTY = 0.1
+VERTICAL_REWARD = 1.3
+HORIZONTAL_PENALTY = 0.7
+'''FLY_WHEEL_SPEED_PENALTY = 25
+THETA_PENALTY = 100
+THETA_DOT_PENALTY = 30
+TIME_REWARD = 5'''
 
 class env():
 
@@ -38,8 +43,9 @@ class env():
         # Initialize Action and Observation Spaces for the NN
         self.max_speed = 8.0
         self.max_torque = 1.0
+        self.max_av = 1.5
 
-        high = np.array([1., 1., self.max_speed])
+        high = np.array([1., 1., self.max_av, self.max_speed])
         self.action_space = np.array([-self.max_torque, self.max_torque, (1,)])
         self.observation_space = np.array([-high, high])
 
@@ -118,6 +124,15 @@ class env():
             done = False
 
         # Reward Function
+        # Rewarding the cos (vertical) component
+        reward = obs[0] * VERTICAL_REWARD
+        # Penalizing sin (horizontal) position
+        reward += - abs(obs[1]) * HORIZONTAL_PENALTY
+        # Penalizing speed (We want the Pendulum to be stable)
+        reward += - abs(obs[2]) * THETA_DOT_PENALTY
+        reward += - abs(obs[3]) * SPEED_PENALTY
+        #reward += self.current_step *0.3
+        '''# Reward Function
         # Penalizing angle in direction of roll of motorcycle -> (obs[0] = theta)
         # Penalizing angular velocity in direction of roll of motorcycle -> (obs[1] = thetaDot)
         # Penalizing angular velocity of Fly wheel -> (obs[2] = flywheelSpeed)
@@ -125,7 +140,7 @@ class env():
         reward = -THETA_PENALTY*abs(obs[0]) - THETA_DOT_PENALTY*abs(obs[1]) -FLY_WHEEL_SPEED_PENALTY*abs(obs[2])
 
         # Rewarding the Time steps that is passed
-        #reward = TIME_REWARD * self.current_step**2
+        reward += TIME_REWARD * self.current_step**2'''
 
         self.current_step += 1
 
@@ -134,11 +149,20 @@ class env():
 
     def _get_obs(self):
         # Extract values from RL_Interface
-        theta = self.interface.getOutputContainer()['theta'].value
+        cos = self.interface.getOutputContainer()['cos'].value
+        sin = self.interface.getOutputContainer()['sin'].value
         thetaDot = self.interface.getOutputContainer()['thetaDot'].value
-        flywheelSpeed = self.interface.getOutputContainer()['flywheelSpeed'].value
+        speed = self.interface.getOutputContainer()['speed'].value
+        '''theta = self.interface.getOutputContainer()['theta'].value
+        thetaDot = self.interface.getOutputContainer()['thetaDot'].value
+        flywheelSpeed = self.interface.getOutputContainer()['flywheelSpeed'].value'''
 
-        return np.array([theta, thetaDot, flywheelSpeed])
+        '''if self.current_step == 1:
+            print("theta", theta)
+            print("thetaDot", thetaDot)
+            print("flywheelSpeed", flywheelSpeed)'''
+
+        return np.array([cos, sin, thetaDot,speed])
 
     def render(self, active=True):
 
