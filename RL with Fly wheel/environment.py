@@ -3,12 +3,13 @@ import vxatp3
 import numpy as np
 
 #Environment Parameters
-MAX_TORQUE = 1500
+MAX_TORQUE = 600
 SUB_STEPS = 5
 MAX_STEPS = 200
-SPEED_PENALTY = 0.1
-VERTICAL_REWARD = 1
-HORIZONTAL_PENALTY = 0.7
+
+FLY_WHEEL_SPEED_PENALTY = 10
+THETA_PENALTY = 1000
+THETA_DOT_PENALTY = 400
 
 class env():
 
@@ -17,13 +18,16 @@ class env():
         self.vxmechanism = None
         self.mechanism = None
         self.interface = None
+        self.scene_object = None
+
 
         # Define the setup and mechanism file paths
         self.setup_file = 'Resources/Setup.vxc'
-        self.content_file = 'Resources/Pendulum/Pendulum.vxmechanism'
+        self.content_file = 'Resources/Motorcycle/Motorcycle.vxmechanism'
+        self.scene_file = 'Resources/Motorcycle/Motorcycle Train Scene.vxscene'
 
         # Create the Vortex Application
-        self.application = vxatp3.VxATPConfig.createApplication(self, 'Pendulum App', self.setup_file)
+        self.application = vxatp3.VxATPConfig.createApplication(self, 'Motorcycle App', self.setup_file)
 
         # Create a display window
         self.display = Vortex.VxExtensionFactory.create(Vortex.DisplayICD.kExtensionFactoryKey)
@@ -59,6 +63,9 @@ class env():
 
             # Get the RL Interface VHL
             self.interface = self.mechanism.findExtensionByName('RL Interface')
+
+            #scene
+            self.scene_object = self.application.getSimulationFileManager().loadObject(self.scene_file)
 
             # Switch to Simulation Mode
             vxatp3.VxATPUtils.requestApplicationModeChangeAndWait(self.application, Vortex.kModeSimulating)
@@ -111,12 +118,14 @@ class env():
             done = False
 
         # Reward Function
-        # Rewarding the cos (vertical) component
-        reward = - obs[0] * VERTICAL_REWARD
-        # Penalizing sin (horizontal) position
-        reward += - abs(obs[1]) * HORIZONTAL_PENALTY
-        # Penalizing speed (We want the Pendulum to be stable)
-        reward += - abs(obs[2]) * SPEED_PENALTY
+        # Penalizing angle in direction of roll of motorcycle -> (obs[0] = theta)
+        # Penalizing angular velocity in direction of roll of motorcycle -> (obs[1] = thetaDot)
+        # Penalizing angular velocity of Fly wheel -> (obs[2] = flywheelSpeed)
+
+        reward = -THETA_PENALTY*abs(obs[0]) - THETA_DOT_PENALTY*abs(obs[1]) -FLY_WHEEL_SPEED_PENALTY*abs(obs[2])
+
+        # Rewarding the Time steps that is passed
+        #reward = TIME_REWARD * self.current_step**2
 
         self.current_step += 1
 
@@ -125,11 +134,11 @@ class env():
 
     def _get_obs(self):
         # Extract values from RL_Interface
-        cos = self.interface.getOutputContainer()['cos'].value
-        sin = self.interface.getOutputContainer()['sin'].value
-        speed = self.interface.getOutputContainer()['speed'].value
+        theta = self.interface.getOutputContainer()['theta'].value
+        thetaDot = self.interface.getOutputContainer()['thetaDot'].value
+        flywheelSpeed = self.interface.getOutputContainer()['flywheelSpeed'].value
 
-        return np.array([cos, sin, speed])
+        return np.array([theta, thetaDot, flywheelSpeed])
 
     def render(self, active=True):
 

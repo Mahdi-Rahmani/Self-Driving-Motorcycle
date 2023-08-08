@@ -10,7 +10,7 @@ total_episodes = 100
 show_every = 10
 AGGREGATE_STATS_EVERY = 20
 MIN_REWARD = 0
-MODEL_NAME = 'ddpg_pendulum_vortex'
+MODEL_NAME = 'ddpg_motor_vortex'
 
 # Discount factor for future rewards
 gamma = 0.99
@@ -244,7 +244,7 @@ for ep in range(total_episodes):
         plt.plot(avg_reward_list)
         plt.xlabel("Episode")
         plt.ylabel("Avg. Epsiodic Reward")
-        plt.savefig(f'{MODEL_NAME}_Episode_Rewards')
+        plt.savefig(f'figures/{MODEL_NAME}_Episode_Rewards')
 
         # Save model, but only when min reward is greater or equal a set value
         if average_reward >= MIN_REWARD:
