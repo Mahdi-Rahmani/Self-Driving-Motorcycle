@@ -1,0 +1,16 @@
+Vortex Studio version 2022.5.0.131
+Running application is C:\Users\Mahdi\AppData\Local\Programs\Python\Python38\python.exe (laptop-8goepi0b:18500)
+Command line arguments are:
+C:\Users\Mahdi\AppData\Local\Programs\Python\Python38\python.exe
+c:/Users/Mahdi/Desktop/Mechanics proj/RL with Fly wheel/Test model/run_ddpg.py
+
+Wed Aug  9 07:51:51 2023 - INFO - ApplicationConfigSerializer: loading 'Resources/Setup.vxc'.
+Wed Aug  9 07:51:51 2023 - DEBUG - VxPluginManager - Loading plugin file: C:/CM Labs/Vortex Studio 2022.5/plugins/VxFoundationPlugin.vxp
+Wed Aug  9 07:51:51 2023 - DEBUG - VxPluginManager - Loading plugin file: C:/CM Labs/Vortex Studio 2022.5/plugins/VxDynamicsPlugin.vxp
+Wed Aug  9 07:51:51 2023 - DEBUG - VindsInitialize: kernel_bvb_inl_rrt will use AVX and FMA vectorization intrinsics.
+Wed Aug  9 07:51:51 2023 - DEBUG - VxPluginManager - Loading plugin file: C:/CM Labs/Vortex Studio 2022.5/plugins/VxQtModule.vxp
+Wed Aug  9 07:51:52 2023 - DEBUG - VxPluginManager - Loading plugin file: C:/CM Labs/Vortex Studio 2022.5/plugins/VxPlayerPlugin.vxp
+Wed Aug  9 07:51:52 2023 - DEBUG - VxPluginManager - Loading plugin file: C:/CM Labs/Vortex Studio 2022.5/plugins/ContentDebugger.vxp
+Wed Aug  9 07:51:52 2023 - DEBUG - VxPluginManager - Loading plugin file: C:/CM Labs/Vortex Studio 2022.5/plugins/Camera.vxp
+Wed Aug  9 07:51:52 2023 - DEBUG - VxPluginManager - Loading plugin file: C:/CM Labs/Vortex Studio 2022.5/plugins/VxGraphicsPlugin.vxp
+Wed Aug  9 07:51:52 2023 - DEBUG - VxApplication: Frame rate set to 60 Hz
