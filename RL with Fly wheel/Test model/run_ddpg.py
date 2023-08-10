@@ -2,8 +2,12 @@ import tensorflow as tf
 import numpy as np
 from environment_test import env
 
-
-LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__149.09avg__1691536608.model'
+LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__144.58avg__1691573897.model'
+#LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__149.09avg__1691536608.model'
+#LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__259.15avg__1691562440.model'
+#LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__154.67avg__1691558061.model'
+#LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__149.09avg__1691536608.model'
+#LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__124.18avg__1691536569.model'
 actor_model = tf.keras.models.load_model(LOAD_MODEL_ACTOR)
 
 

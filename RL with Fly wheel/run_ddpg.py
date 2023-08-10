@@ -3,7 +3,7 @@ import numpy as np
 from environment import env
 
 
-LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__149.09avg__1691536608.model'
+LOAD_MODEL_ACTOR = 'models\ddpg_motor_vortex_Actor__411.98avg__1691564040.model'
 actor_model = tf.keras.models.load_model(LOAD_MODEL_ACTOR)
 
 

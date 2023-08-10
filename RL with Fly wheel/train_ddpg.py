@@ -6,8 +6,8 @@ import time
 from models import *
 
 #Training Parameters
-total_episodes = 1000
-show_every = 50
+total_episodes = 1100
+show_every = 20
 AGGREGATE_STATS_EVERY = 20
 MIN_REWARD = 0
 MODEL_NAME = 'ddpg_motor_vortex'
