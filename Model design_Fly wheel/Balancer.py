@@ -21,57 +21,6 @@ prev_obstacle_err = 0
 pose = 0
 #R_velocity = 0
 
-def on_simulation_start(extension):
-    """
-    # Creating an input of type boolean
-    extension.createInput("boolean input", Vortex.Types.Type_Bool)
-    # Creating an output of type double
-    extension.createOutput("an output double", Vortex.Types.Type_Double)
-    # Creating a parameter of type double
-    extension.createParameter("number", Vortex.Types.Type_Double)
-    """ 
-    #extension.sensor = LidarSensor()
-    pass
-    
-
- 
-def on_simulation_stop(extension):
-    """ Called when the application mode changes from simulating to editing.
-    Use this method to define specific actions that must be taken at the end of the simulation.
-     
-    Parameters
-    ----------
-    extension : object
-        The DynamicsScript extension referring to this script.
-     
-    """
-    pass
- 
-def pre_step(extension):
-    """ Called before the collision detection and before the dynamic solver.
-    Use this method to get inputs or set values to dynamics objects.
-     
-    Parameters
-    ----------
-    extension : object
-        The DynamicsScript extension referring to this script.
-     
-    """
-    #extension.outputs.pos.value = extension.outputs.pos.value - 0.1
-    
-    pass
- 
-def paused_update(extension):
-    """ Called at every update in editing mode and when the simulation is paused.
-     
-    Parameters
-    ----------
-    extension : object
-        The DynamicsScript extension referring to this script.
-     
-    """
-     
-    pass
 def saveLidarSensorDistanceField(inputLidarSensor):
     # Here, inputLidarSensor is an input extension field to which the depth camera is connected
     distanceFieldVectorFloat = inputLidarSensor.getOutput("Distance field").toVectorFloat()
@@ -268,7 +217,7 @@ def post_step(extension):
     else:
         max_x = 8
         rear_wheel_vel = ((max_x-abs(cur_x))/max_x)*400
-        kp = 4
+        kp = 4.5
         kd = 2.5
 
         dist_from_line = cur_x
@@ -281,42 +230,3 @@ def post_step(extension):
     #print('dist,pose, cur_x', dist,pose, cur_x)
     #print(dist)
  
-def on_keyframe_save(extension, data):
-    """ Called after a keyframe has been taken.
-    Use the data parameter to store values that will be provided back in the on_keyframe_restore
-    These values can be anything used in that script that you want restore to this point in time.
-    The extension itself will be properly restored and thus it's data do not need to be saved manually.
-     
-    Parameters
-    ----------
-    extension : object
-        The DynamicsScript extension referring to this script.
-     
-    data : dictionnary
-        Store values that will be provided back in the on_keyframe_restore
-         
-        The following types are supported: booleans, integers, long integers, floating point
-        numbers, complex numbers, strings, Unicode objects, tuples, lists, sets, frozen sets,
-        dictionaries, and code objects.
-         
-        Tuples, lists, sets, frozen sets and dictionaries are only supported as long as the values contained therein are
-        themselves supported; and recursive lists, sets and dictionaries should not be written (they will cause infinite loops).
-        The singletons None, Ellipsis and StopIteration can also be saved and restored.
-         
-    """
-    pass
-     
-def on_keyframe_restore(extension, data):
-    """ Called after a keyframe has been fully restored.
-     
-    Use the data parameter to restore the script to the point where the data was captured.
-     
-    Parameters
-    ----------
-    extension : object
-        The DynamicsScript extension referring to this script.
-     
-    data : dictionnary
-        Stored values capture during the last call to on_keyframe_save
-    """
-    pass
