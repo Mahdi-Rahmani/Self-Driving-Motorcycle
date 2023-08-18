@@ -2,6 +2,8 @@ import Vortex
 import vxatp3
 import numpy as np
 import math 
+import csv
+
 #Environment Parameters
 MAX_TORQUE = 500
 SUB_STEPS = 5
@@ -29,7 +31,7 @@ HORIZONTAL_PENALTY = 0.7'''
 THETA_PENALTY = 100
 THETA_DOT_PENALTY = 30
 TIME_REWARD = 5'''
-
+my_file = [["step", "theta", "thetaDot", "fly_wheel_speed", "force"],]
 class env():
 
     def __init__(self):
@@ -130,10 +132,14 @@ class env():
 
         # Observations
         obs = self._get_obs()
-
+        
+        global my_file
+        my_file.append([self.current_step ,math.asin(obs[1]), obs[2], obs[3], action[0] * MAX_TORQUE])
+        print(self.current_step)
         # Done flag
         if self.current_step >= MAX_STEPS:
             done = True
+            self.write_to_csv()
         else:
             done = False
 
@@ -160,6 +166,18 @@ class env():
 
         return obs, reward, done, {}
 
+    def write_to_csv(self):
+        global my_file
+        with open('results.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            
+            #writer = csv.writer(file)
+            writer.writerows(my_file)
+            #writer.writerow(["step", "theta", "thetaDot", "fly_wheel_speed", "force"])
+            '''for data in my_file:
+                writer.writerow(data)'''
+            
+
 
     def _get_obs(self):
         # Extract values from RL_Interface
@@ -175,7 +193,6 @@ class env():
             print("theta", theta)
             print("thetaDot", thetaDot)
             print("flywheelSpeed", flywheelSpeed)'''
-
         return np.array([cos, sin, thetaDot,speed])
 
     def render(self, active=True):
