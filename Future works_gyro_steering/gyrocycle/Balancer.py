@@ -4,12 +4,17 @@ import math
 pris1 = 0
 pris2 = 0
 counter = 0
+def on_simulation_start(extension):
+    global pris1, pris2, counter
+    pris1 = 0
+    pris2 = 0
+    counter = 0
 
 def post_step(extension):
     global pris1, pris2, counter
     counter += 1
     if counter>400:
-        if pris1<0.2:
+        if pris1<0.3:
             pris1 += 0.01
             pris2 += 0.01
         extension.outputs.pris1.value = pris1
