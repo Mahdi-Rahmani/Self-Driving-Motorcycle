@@ -1,4 +1,4 @@
-# Self balancing motorcycle
+# Self Driving Motorcycle
 <p align="center">
   <a href="https://github.com/Mahdi-Rahmani/Self-driving-Motorcycle-/blob/main/Results/Motorcycle2.png">
     <img src="https://github.com/Mahdi-Rahmani/Self-driving-Motorcycle-/blob/main/Results/Motorcycle2.png" alt="Mech-AUT Motorcycle">
@@ -89,4 +89,4 @@ For example, by utilizing a gyroscope, we achieved the results shown below:
 ## Discussion
 These three methods each perform better in specific simulation situations. We collect data from the simulations to verify this, and additional explanations are provided in my [final report.](https://github.com/Mahdi-Rahmani/Self-driving-Motorcycle-/blob/main/Final%20Report/Final_Report_Rahmani.pdf)
 
-My presentation file can also be accessed at this [link].(https://docs.google.com/presentation/d/1-7Z2EOImf09F18AmHH1wWCepT36cc-Xw/edit?usp=sharing&ouid=112561970420312111928&rtpof=true&sd=true)
+My presentation file can also be accessed at this [link.](https://docs.google.com/presentation/d/1-7Z2EOImf09F18AmHH1wWCepT36cc-Xw/edit?usp=sharing&ouid=112561970420312111928&rtpof=true&sd=true)
